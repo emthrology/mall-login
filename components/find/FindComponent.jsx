@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '../common/form/TextField';
 import { useValidation } from '@/util/useValidation';
 import { useFormField } from '@/util/useFormField';
+import { useRouter } from 'next/router';
+import Timer from '../common/Timer';
 
 const validatePhone = phone => {
   if (!/^(\+82|0)(10|11|16|17|18|19)\d{7,8}$/.test(phone)) {
@@ -16,6 +18,7 @@ const validateCerti = certiVal => {
   return [true, ''];
 };
 export default function FindComponent() {
+  const router = useRouter();
   const phoneField = useFormField('');
   const certiReqField = useFormField(false);
   const certificationField = useFormField('');
@@ -27,6 +30,7 @@ export default function FindComponent() {
     validateCerti,
     '인증번호를 입력해주세요',
   );
+  const [counter, setCounter] = useState(180);
 
   return (
     <>
@@ -38,7 +42,7 @@ export default function FindComponent() {
               field={phoneField}
               validation={phoneValidation}
               placeholder="핸드폰번호 입력(예시 01055667788)"
-            />
+            ></TextField>
             {/* TODO 아래 onClick 삭제하기 */}
             <button
               onClick={() => certiReqField.setValue(true)}
@@ -54,8 +58,18 @@ export default function FindComponent() {
                 field={certificationField}
                 validation={certiValidation}
                 placeholder="인증번호 입력"
-              />
-              <button className="my-4 rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white">
+              >
+                {/* <span>타이머 자리</span> */}
+                <Timer counter={counter} setCounter={setCounter} />
+              </TextField>
+              <button
+                onClick={e => {
+                  e.preventDefault();
+                  // TODO 결과값 받아서 resetComponent 로 route 하기
+                  router.push('/find/reset');
+                }}
+                className="my-4 rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
+              >
                 확인
               </button>
             </div>

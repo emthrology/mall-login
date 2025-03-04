@@ -191,85 +191,81 @@ export default function RegisterComponent() {
   };
 
   return (
-    <>
-      <div className="flex justify-center items-start">
-        <div className="lg:w-1/2 min-w-[330px] p-4">
-          <div>
+    <div className="flex justify-center items-start">
+      <form onSubmit={register} className="lg:w-1/2 min-w-[330px] p-4">
+        <div>
+          <TextField
+            label="아이디"
+            field={idField}
+            validation={idValidation}
+            placeholder="아이디"
+          />
+          <TextField
+            label="비밀번호"
+            field={passwordField}
+            validation={passwordValidation}
+            placeholder="비밀번호"
+            type="password"
+          />
+          <TextField
+            label="이름"
+            field={nameField}
+            validation={nameValidation}
+            placeholder="이름"
+          />
+          <TextField
+            label="생년월일"
+            field={birthField}
+            validation={birthValidation}
+            placeholder="생년월일(예시 19551014)"
+          />
+          <Switch
+            field={genderField}
+            validation={genderValidation}
+            options={['남', '여']}
+            label="성별"
+          />
+          <TextField
+            label="휴대폰번호"
+            field={phoneField}
+            validation={phoneValidation}
+            placeholder="휴대폰번호(예시 01012345678)"
+          />
+          <Select
+            label="현재 살고있는 나라"
+            field={countryField}
+            options={countryOptions}
+            onChange={value => countryField.handleChange(value)}
+          />
+          {countryField.value == '대한민국' && (
+            <Address
+              label="주소"
+              field={addressField1}
+              onChange={value => addressField1.handleChange(value)}
+            />
+          )}
+          {countryField.value && (
             <TextField
-              label="아이디"
-              field={idField}
-              validation={idValidation}
-              placeholder="아이디"
+              label={countryField.value == '대한민국' ? '상세주소' : '외국주소'}
+              field={addressField2}
+              validation={address2Validation}
+              placeholder=""
             />
-            <TextField
-              label="비밀번호"
-              field={passwordField}
-              validation={passwordValidation}
-              placeholder="비밀번호"
-              type="password"
-            />
-            <TextField
-              label="이름"
-              field={nameField}
-              validation={nameValidation}
-              placeholder="이름"
-            />
-            <TextField
-              label="생년월일"
-              field={birthField}
-              validation={birthValidation}
-              placeholder="생년월일(예시 19551014)"
-            />
-            <Switch
-              field={genderField}
-              validation={genderValidation}
-              options={['남', '여']}
-              label="성별"
-            />
-            <TextField
-              label="휴대폰번호"
-              field={phoneField}
-              validation={phoneValidation}
-              placeholder="휴대폰번호(예시 01012345678)"
-            />
-            <Select
-              label="현재 살고있는 나라"
-              field={countryField}
-              options={countryOptions}
-              onChange={value => countryField.handleChange(value)}
-            />
-            {countryField.value == '대한민국' && (
-              <Address
-                label="주소"
-                field={addressField1}
-                onChange={value => addressField1.handleChange(value)}
-              />
-            )}
-            {countryField.value && (
-              <TextField
-                label={
-                  countryField.value == '대한민국' ? '상세주소' : '외국주소'
-                }
-                field={addressField2}
-                validation={address2Validation}
-                placeholder=""
-              />
-            )}
-            <Select
-              label="종교"
-              field={religionField}
-              options={religionOptions}
-              onChange={value => religionField.handleChange(value)}
-            />
-          </div>
-          <button
-            onClick={register}
-            className="my-4 rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
-          >
-            가입하기
-          </button>
+          )}
+          <Select
+            label="종교"
+            field={religionField}
+            options={religionOptions}
+            onChange={value => religionField.handleChange(value)}
+          />
         </div>
-      </div>
-    </>
+        <button
+          type="submit"
+          className="my-4 rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
+        >
+          가입하기
+        </button>
+      </form>
+    </div>
   );
 }

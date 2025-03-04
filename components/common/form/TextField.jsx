@@ -1,6 +1,7 @@
 import React from 'react';
 
 const TextField = ({
+  children,
   field,
   validation,
   placeholder,
@@ -9,10 +10,16 @@ const TextField = ({
 }) => {
   return (
     <>
-      <div className="mb-1">
-        {label && (
-          <label className=" text-gray-700 text-md font-medium">{label}</label>
-        )}
+      <div className=" mb-1">
+        <div className="flex flex-row justify-between">
+          {label && (
+            <label className=" text-gray-700 text-md font-medium">
+              {label}
+            </label>
+          )}
+          {children}
+        </div>
+
         <div className="flex mb-2">
           <input
             type={type}

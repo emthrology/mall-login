@@ -1,8 +1,12 @@
 import Link from 'next/link';
-import React from 'react';
+import { useEffect, useState } from 'react';
 import TextField from '@/components/common/form/TextField';
 import { useFormField } from '@/util/useFormField';
 import { useValidation } from '@/util/useValidation';
+
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
 
 const validateId = id => {
   if (id === '' || id === null) {
@@ -36,6 +40,23 @@ export default function LoginComponent() {
     '영어나 영어 숫자 포함 4글자 이상',
   );
   const passwordValidation = useValidation(validatePassword, '4자리이상');
+
+  // const [data, setData] = useState({
+  //   news: [],
+  //   qna: {},
+  //   gallery: [],
+  //   book: [],
+  //   card: [],
+  // });
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
+  // const fetchData = async () => {
+  //   const response = await fetch(`${publicRuntimeConfig.apiUrl}/intros`);
+  //   const data = await response.json();
+  //   console.log(data);
+  //   setData(data);
+  // };
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -109,6 +130,23 @@ export default function LoginComponent() {
               확인
             </button>
           </div>
+          {/* <ul>
+            {data.news &&
+              data.news.map(news => {
+                return (
+                  <li
+                    key={news.id}
+                    className="w-full p-4 my-2 bg-zinc-200 rounded-lg"
+                  >
+                    <p>id:{news.id}</p>
+                    <p>board:{news.board}</p>
+                    <p>title:{news.title}</p>
+                    <p dangerouslySetInnerHTML={{ __html: news.content }}></p>
+                    <p>{news.updated_at}</p>
+                  </li>
+                );
+              })}
+          </ul> */}
         </div>
       </div>
     </div>
