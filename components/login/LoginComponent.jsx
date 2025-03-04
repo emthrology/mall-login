@@ -127,11 +127,7 @@ export default function LoginComponent() {
                 </span>
               </Link>
             </div>
-            <p className="mb-8 text-gray-600 text-center">
-              회원가입이 어려우신 경우
-              <br />
-              <a href="tel:15447166">콜센터 ☎1522-8686로 문의해주세요.</a>
-            </p>
+
             <button
               onClick={handleSubmit}
               className="rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
