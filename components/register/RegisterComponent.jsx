@@ -1,10 +1,15 @@
 import React from 'react';
+import { useState } from 'react';
 import { useFormField } from '@/util/useFormField';
 import { useValidation } from '@/util/useValidation';
 import TextField from '@/components/common/form/TextField';
 import Switch from '@/components/common/form/Switch';
 import Select from '../common/form/Select';
 import Address from '../common/form/Address';
+
+import getConfig from 'next/config';
+import TosComponent from '../common/register/TermsAgreement';
+const { publicRuntimeConfig } = getConfig();
 
 const validateId = id => {
   if (id === '' || id === null) {
@@ -75,7 +80,13 @@ const validatePhone = phone => {
 };
 const validateAddress2 = address2 => {
   if (address2 === '' || address2 === null) {
-    return [false, '아이디를 입력해주세요'];
+    return [false, '상세주소를 입력해주세요'];
+  }
+  return [true, ''];
+};
+const validateForeignAddress = foreignAddress => {
+  if (foreignAddress === '' || foreignAddress === null) {
+    return [false, '주소를 입력해주세요'];
   }
   return [true, ''];
 };
@@ -104,6 +115,12 @@ const religionOptions = [
 ];
 
 export default function RegisterComponent() {
+  const [agreements, setAgreements] = useState({
+    all: false,
+    termsOfUse: false,
+    personalInform: false,
+    pushInform: false,
+  });
   const idField = useFormField('');
   const passwordField = useFormField('');
   const nameField = useFormField('');
@@ -113,6 +130,7 @@ export default function RegisterComponent() {
   const countryField = useFormField('대한민국');
   const addressField1 = useFormField('');
   const addressField2 = useFormField('');
+  const foreignAddressField = useFormField('');
   const religionField = useFormField('없음');
   const idValidation = useValidation(
     validateId,
@@ -130,46 +148,62 @@ export default function RegisterComponent() {
     '전화번호를 입력해주세요',
   );
   const address2Validation = useValidation(validateAddress2, '');
+  const foreignAddressValidation = useValidation(validateForeignAddress, '');
   //TODO api 주소 매칭 및 리다이랙트 주소 설정
-  const register = async () => {
-    // 모든 필드의 유효성 검사 실행
+  const validateForm = () => {
     const isIdValid = idValidation.validate(idField.value);
     const isPasswordValid = passwordValidation.validate(passwordField.value);
     const isNameValid = nameValidation.validate(nameField.value);
     const isBirthValid = birthValidation.validate(birthField.value);
     const isGenderValid = genderValidation.validate(genderField.value);
     const isPhoneValid = phoneValidation.validate(phoneField.value);
-    const isAddress2Valid = address2Validation.validate(addressField2.value);
-
+    const isAddressValid =
+      address2Validation.validate(addressField2.value) ||
+      foreignAddressValidation.validate(foreignAddressField.value);
+    const agreeTermsOfUse = agreements.termsOfUse;
+    const agreePersonalInform = agreements.personalInform;
     // 모든 유효성 검사가 통과되었는지 확인
-    if (
+    return (
       isIdValid &&
       isPasswordValid &&
       isNameValid &&
       isBirthValid &&
       isGenderValid &&
       isPhoneValid &&
-      isAddress2Valid
-    ) {
+      isAddressValid &&
+      agreeTermsOfUse &&
+      agreePersonalInform
+    );
+  };
+  const register = async e => {
+    e.preventDefault();
+    // 모든 필드의 유효성 검사 실행
+    const valid = validateForm();
+    if (valid) {
       try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `${publicRuntimeConfig.apiUrl}/account/register`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              clientService: '광화문몰',
+              role: 'user',
+              loginId: idField.value,
+              password: passwordField.value,
+              username: nameField.value,
+              birth: birthField.value,
+              gender: genderField.value,
+              phone: phoneField.value,
+              country: countryField.value,
+              address1: addressField1.value,
+              address2: addressField2.value,
+              religion: religionField.value,
+            }),
           },
-          body: JSON.stringify({
-            id: idField.value,
-            password: passwordField.value,
-            name: nameField.value,
-            birth: birthField.value,
-            gender: genderField.value,
-            phone: phoneField.value,
-            country: countryField.value,
-            address1: addressField1.value,
-            address2: addressField2.value,
-            religion: religionField.value,
-          }),
-        });
+        );
 
         if (response.ok) {
           // 성공적으로 등록된 경우의 처리
@@ -195,12 +229,14 @@ export default function RegisterComponent() {
       <form onSubmit={register} className="lg:w-1/2 min-w-[330px] p-4">
         <div>
           <TextField
+            name="loginId"
             label="아이디"
             field={idField}
             validation={idValidation}
             placeholder="아이디"
           />
           <TextField
+            name="password"
             label="비밀번호"
             field={passwordField}
             validation={passwordValidation}
@@ -208,30 +244,35 @@ export default function RegisterComponent() {
             type="password"
           />
           <TextField
+            name="nusernameame"
             label="이름"
             field={nameField}
             validation={nameValidation}
             placeholder="이름"
           />
           <TextField
+            name="birth"
             label="생년월일"
             field={birthField}
             validation={birthValidation}
             placeholder="생년월일(예시 19551014)"
           />
           <Switch
+            name="gender"
             field={genderField}
             validation={genderValidation}
             options={['남', '여']}
             label="성별"
           />
           <TextField
+            name="phone"
             label="휴대폰번호"
             field={phoneField}
             validation={phoneValidation}
             placeholder="휴대폰번호(예시 01012345678)"
           />
           <Select
+            name="country"
             label="현재 살고있는 나라"
             field={countryField}
             options={countryOptions}
@@ -239,25 +280,38 @@ export default function RegisterComponent() {
           />
           {countryField.value == '대한민국' && (
             <Address
+              name="addres1"
               label="주소"
               field={addressField1}
               onChange={value => addressField1.handleChange(value)}
             />
           )}
-          {countryField.value && (
+          {countryField.value && countryField.value == '대한민국' && (
             <TextField
-              label={countryField.value == '대한민국' ? '상세주소' : '외국주소'}
+              name="address2"
+              label={'상세주소'}
               field={addressField2}
               validation={address2Validation}
               placeholder=""
             />
           )}
-          <Select
+          {countryField.value && countryField.value !== '대한민국' && (
+            <TextField
+              name="foreignAddress"
+              label={'외국주소'}
+              field={foreignAddressField}
+              validation={foreignAddressValidation}
+              placeholder=""
+            />
+          )}
+          {/* <Select
+            name='religioin'
             label="종교"
             field={religionField}
             options={religionOptions}
             onChange={value => religionField.handleChange(value)}
-          />
+          /> */}
+          <TosComponent agreements={agreements} setAgreements={setAgreements} />
         </div>
         <button
           type="submit"

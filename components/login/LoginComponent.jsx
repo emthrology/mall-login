@@ -5,7 +5,6 @@ import { useFormField } from '@/util/useFormField';
 import { useValidation } from '@/util/useValidation';
 
 import getConfig from 'next/config';
-
 const { publicRuntimeConfig } = getConfig();
 
 const validateId = id => {
@@ -52,7 +51,7 @@ export default function LoginComponent() {
   //   fetchData();
   // }, []);
   // const fetchData = async () => {
-  //   const response = await fetch(`${publicRuntimeConfig.apiUrl}/intros`);
+  //   const response = await fetch(`${publicRuntimeConfig.apiUrl}/oauth/login`);
   //   const data = await response.json();
   //   console.log(data);
   //   setData(data);
@@ -66,21 +65,28 @@ export default function LoginComponent() {
 
     if (isIdValid && isPasswordValid) {
       try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `${publicRuntimeConfig.apiUrl}/oauth/login`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              clientServiceName: '광화문몰',
+              loginId: idField.value,
+              password: passwordField.value,
+            }),
           },
-          body: JSON.stringify({
-            id: idField.value,
-            password: passwordField.value,
-          }),
-        });
-
+        );
         if (response.ok) {
           console.log('로그인 성공');
+          const data = await response.json(); //TODO for test: delete line after it;
+          console.log(data, 55);
+          window.close();
         } else {
-          console.log('로그인 실패');
+          const error = await response.json();
+          alert(error.message);
         }
       } catch (error) {
         console.error('로그인 에러:', error);
@@ -126,7 +132,10 @@ export default function LoginComponent() {
               <br />
               <a href="tel:15447166">콜센터 ☎1522-8686로 문의해주세요.</a>
             </p>
-            <button className="rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white">
+            <button
+              onClick={handleSubmit}
+              className="rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
+            >
               확인
             </button>
           </div>
