@@ -24,7 +24,10 @@ export default function Address({ field, placeholder, onChange, label }) {
           className={`w-full py-2 text-gray-700 bg-white border-b border-gray-300 focus:outline-none text-lg `}
         />
         <button
-          onClick={openModal}
+          onClick={e => {
+            e.preventDefault();
+            setIsModalOpen(true);
+          }}
           className="min-w-[70px] bg-black text-white rounded-md"
         >
           검색

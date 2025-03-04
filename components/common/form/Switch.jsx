@@ -12,7 +12,8 @@ const Switch = ({ field, validation, options, label, errorMessage }) => {
         {options.map(option => (
           <button
             key={option}
-            onClick={() => {
+            onClick={e => {
+              e.preventDefault();
               field.handleChange(option);
               validation.validate(option);
             }}
