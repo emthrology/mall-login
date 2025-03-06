@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import { useFormField } from '@/util/useFormField';
 import { useValidation } from '@/util/useValidation';
 import TextField from '@/components/common/form/TextField';
@@ -8,7 +9,7 @@ import Select from '../common/form/Select';
 import Address from '../common/form/Address';
 
 import getConfig from 'next/config';
-import TosComponent from '../common/register/TermsAgreement';
+import TermsAgreement from '../common/register/TermsAgreement';
 const { publicRuntimeConfig } = getConfig();
 
 const validateId = id => {
@@ -24,8 +25,8 @@ const validateId = id => {
   return [true, ''];
 };
 const validatePassword = password => {
-  if (password.length < 4) {
-    return [false, '비밀번호는 4자리 이상이어야 합니다'];
+  if (password.length < 8) {
+    return [false, '비밀번호는 8자리 이상이어야 합니다'];
   }
   if (!/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/.test(password)) {
     return [false, '비밀번호는 영문, 숫자, 특수문자만 포함해야 합니다'];
@@ -115,6 +116,7 @@ const religionOptions = [
 ];
 
 export default function RegisterComponent() {
+  const router = useRouter();
   const [agreements, setAgreements] = useState({
     all: false,
     termsOfUse: false,
@@ -200,6 +202,7 @@ export default function RegisterComponent() {
               country: countryField.value,
               address1: addressField1.value,
               address2: addressField2.value,
+              foreignAddress: foreignAddressField.value,
               religion: religionField.value,
             }),
           },
@@ -209,10 +212,10 @@ export default function RegisterComponent() {
           // 성공적으로 등록된 경우의 처리
           console.log('회원가입 성공');
           // 추가적인 성공 처리 (예: 로그인 페이지로 리다이렉트)
+          router.push('/register/success');
         } else {
-          // 서버에서 오류 응답을 받은 경우의 처리
-          console.error('회원가입 실패');
-          // 추가적인 오류 처리
+          const error = await response.json();
+          alert(error.message);
         }
       } catch (error) {
         // 네트워크 오류 등의 예외 처리
@@ -311,7 +314,10 @@ export default function RegisterComponent() {
             options={religionOptions}
             onChange={value => religionField.handleChange(value)}
           /> */}
-          <TosComponent agreements={agreements} setAgreements={setAgreements} />
+          <TermsAgreement
+            agreements={agreements}
+            setAgreements={setAgreements}
+          />
         </div>
         <p className="mb-8 text-gray-600 text-center">
           회원가입이 어려우신 경우
@@ -322,7 +328,7 @@ export default function RegisterComponent() {
           type="submit"
           className="my-4 rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
         >
-          가입하기
+          동의하고 가입하기
         </button>
       </form>
     </div>

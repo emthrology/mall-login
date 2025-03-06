@@ -79,6 +79,8 @@ export default function LoginComponent() {
             }),
           },
         );
+        console.log(response, 33333);
+
         if (response.ok) {
           console.log('로그인 성공');
           const data = await response.json(); //TODO for test: delete line after it;

@@ -3,6 +3,8 @@ import TextField from '../common/form/TextField';
 import { useValidation } from '@/util/useValidation';
 import { useFormField } from '@/util/useFormField';
 import { useRouter } from 'next/router';
+import getConfig from 'next/config';
+const { publicRuntimeConfig } = getConfig();
 import Timer from '../common/Timer';
 
 const validatePhone = phone => {
@@ -31,6 +33,88 @@ export default function FindComponent() {
     '인증번호를 입력해주세요',
   );
   const [counter, setCounter] = useState(180);
+  const [cert, setCert] = useState('');
+
+  const requestCertNumber = async () => {
+    const valid = phoneValidation.validate(phoneField.value);
+    if (valid) {
+      try {
+        const response = await fetch(
+          `${publicRuntimeConfig.apiUrl}/cert/verify`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              phone: phoneField.value,
+            }),
+          },
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setCert(data.cert);
+          certiReqField.setValue(true);
+          console.log(data, 666);
+        } else {
+          const error = await response.json();
+          alert(error.message);
+        }
+      } catch (error) {
+        console.log(error, 131313);
+        // const contentType = error.headers.get('Content-Type') || '';
+        // if (contentType.includes('application/json')) {
+        //   const errorData = await error.json();
+        //   console.error('인증번호 전송 에러:', errorData);
+        //   return errorData;
+        // } else {
+        //   const textData = await error.text();
+        //   console.error('Non-JSON Error:', textData);
+        //   return { error: textData };
+        // }
+        // console.error('인증번호 전송 에러:', error);
+      }
+    }
+  };
+  const requestCert = async () => {
+    try {
+      const response = await fetch(
+        `${publicRuntimeConfig.apiUrl}/cert/verify?phone=${phoneField.value}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            certi_code: cert,
+          }),
+        },
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // TODO activate this line
+        // certiReqField.setValue(true)
+        console.log(data, 666);
+        router.push(`/find/reset?userid=${data.loginId}`);
+      } else {
+        const error = await response.json();
+        alert(error.message);
+      }
+    } catch (error) {
+      console.log(error, 131313);
+      // const contentType = error.headers.get('Content-Type') || '';
+      // if (contentType.includes('application/json')) {
+      //   const errorData = await error.json();
+      //   console.error('인증번호 전송 에러:', errorData);
+      //   return errorData;
+      // } else {
+      //   const textData = await error.text();
+      //   console.error('Non-JSON Error:', textData);
+      //   return { error: textData };
+      // }
+      // console.error('인증번호 전송 에러:', error);
+    }
+  };
 
   return (
     <>
@@ -43,9 +127,9 @@ export default function FindComponent() {
               validation={phoneValidation}
               placeholder="핸드폰번호 입력(예시 01055667788)"
             ></TextField>
-            {/* TODO 아래 onClick 삭제하기 */}
+            {/* TODO 아래 onClick 실제 메소드로 교체하기 */}
             <button
-              onClick={() => certiReqField.setValue(true)}
+              onClick={requestCertNumber}
               className="my-4 rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
             >
               인증번호 전송
@@ -66,7 +150,7 @@ export default function FindComponent() {
                 onClick={e => {
                   e.preventDefault();
                   // TODO 결과값 받아서 resetComponent 로 route 하기
-                  router.push('/find/reset');
+                  requestCert();
                 }}
                 className="my-4 rounded-md bg-red-500 w-full min-h-[50px] text-lg font-bold text-white"
               >
