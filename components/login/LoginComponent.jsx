@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import TextField from '@/components/common/form/TextField';
 import { useFormField } from '@/util/useFormField';
 import { useValidation } from '@/util/useValidation';
-
+import { useRouter } from 'next/router';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 
@@ -31,6 +31,8 @@ const validatePassword = password => {
 };
 
 export default function LoginComponent() {
+  const router = useRouter();
+  const { state = '', client_id = '' } = router.query;
   const idField = useFormField('');
   const passwordField = useFormField('');
 
@@ -76,6 +78,8 @@ export default function LoginComponent() {
               clientServiceName: '광화문몰',
               loginId: idField.value,
               password: passwordField.value,
+              GRAMT_CODE: state,
+              CLIENT_ID: client_id,
             }),
           },
         );
