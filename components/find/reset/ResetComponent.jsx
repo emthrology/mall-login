@@ -13,25 +13,28 @@ const validatePW = pw => {
 };
 export default function FindComponent() {
   const router = useRouter();
-  const { userid = '디폴트 아이디' } = router.query;
+  const { userid = '디폴트 아이디', id = '' } = router.query;
   const passwordField = useFormField('');
   const passwordValidation = useValidation(
     validatePW,
     '새 비밀번호를 입력해주세요',
   );
   const changePassword = async () => {
-    const valid = validatePW.validate(passwordField.value);
+    const valid = passwordValidation.validate(passwordField.value);
     if (valid) {
       try {
-        const response = await fetch(`${publicRuntimeConfig.apiUrl}/change`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          `${publicRuntimeConfig.apiUrl}/account/password/${id}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              password: passwordField.value,
+            }),
           },
-          body: JSON.stringify({
-            password: passwordField.value,
-          }),
-        });
+        );
         if (response.ok) {
           const data = await response.json();
           console.log(data, 666);
@@ -43,17 +46,6 @@ export default function FindComponent() {
         }
       } catch (error) {
         console.log(error, 131313);
-        // const contentType = error.headers.get('Content-Type') || '';
-        // if (contentType.includes('application/json')) {
-        //   const errorData = await error.json();
-        //   console.error('인증번호 전송 에러:', errorData);
-        //   return errorData;
-        // } else {
-        //   const textData = await error.text();
-        //   console.error('Non-JSON Error:', textData);
-        //   return { error: textData };
-        // }
-        // console.error('인증번호 전송 에러:', error);
       }
     }
   };
