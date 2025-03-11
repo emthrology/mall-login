@@ -32,7 +32,11 @@ const validatePassword = password => {
 
 export default function LoginComponent() {
   const router = useRouter();
-  const { state = '', client_id = '' } = router.query;
+  const {
+    response_type = '',
+    client_id = '',
+    redirect_uri = '',
+  } = router.query;
   const idField = useFormField('');
   const passwordField = useFormField('');
 
@@ -78,8 +82,9 @@ export default function LoginComponent() {
               clientServiceName: '광화문몰',
               loginId: idField.value,
               password: passwordField.value,
-              GRAMT_CODE: state,
+              GRANT_CODE: response_type,
               CLIENT_ID: client_id,
+              CALLBACK_URI: redirect_uri,
             }),
           },
         );
@@ -89,7 +94,7 @@ export default function LoginComponent() {
           console.log('로그인 성공');
           const data = await response.json(); //TODO for test: delete line after it;
           console.log(data, 55);
-          window.close();
+          // window.close();
         } else {
           const error = await response.json();
           alert(error.message);
