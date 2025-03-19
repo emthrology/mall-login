@@ -10,87 +10,10 @@ import Address from '../common/form/Address';
 
 import getConfig from 'next/config';
 import TermsAgreement from '../common/register/TermsAgreement';
+import { useValidate } from '@/hooks/useValidate';
+import Image from 'next/image';
+
 const { publicRuntimeConfig } = getConfig();
-
-const validateId = id => {
-  if (id === '' || id === null) {
-    return [false, '아이디를 입력해주세요'];
-  }
-  if (id.length <= 3) {
-    return [false, '아이디는 최소 4글자 이상 입력해주세요'];
-  }
-  if (!/^[a-zA-Z0-9]+$/.test(id)) {
-    return [false, '아이디는 영어나 숫자포함 4글자 입력해주세요'];
-  }
-  return [true, ''];
-};
-const validatePassword = password => {
-  if (password.length < 8) {
-    return [false, '비밀번호는 8자리 이상이어야 합니다'];
-  }
-  if (!/^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/.test(password)) {
-    return [false, '비밀번호는 영문, 숫자, 특수문자만 포함해야 합니다'];
-  }
-  return [true, ''];
-};
-const validateName = name => {
-  if (name === '' || name === null) {
-    return [false, '이름을 입력해주세요'];
-  }
-  return [true, ''];
-};
-const validateBirth = dateString => {
-  if (dateString === '' || dateString === null) {
-    return [false, '생년월일을 입력해주세요'];
-  }
-  // 정규표현식으로 기본 형식 검사
-  if (!/^\d{8}$/.test(dateString)) {
-    return [false, '생년월일 8자리를 입력해주세요 (예시 19551014)'];
-  }
-
-  // 연, 월, 일 추출
-  const year = parseInt(dateString.substring(0, 4), 10);
-  const month = parseInt(dateString.substring(4, 6), 10);
-  const day = parseInt(dateString.substring(6, 8), 10);
-
-  // 월 범위 검사
-  if (month < 1 || month > 12) {
-    return [false, '올바른 생년월일을 입력해주세요'];
-  }
-
-  // 각 월의 마지막 날짜
-  const lastDayOfMonth = new Date(year, month, 0).getDate();
-
-  // 일 범위 검사
-  if (day < 1 || day > lastDayOfMonth) {
-    return [false, '올바른 생년월일을 입력해주세요'];
-  }
-  return [true, ''];
-};
-const validateGender = genderValue => {
-  if (genderValue === '' || genderValue === null) {
-    return [false, '성별을 선택해주세요'];
-  }
-  return [true, ''];
-};
-const validatePhone = phone => {
-  if (!/^(\+82|0)(10|11|16|17|18|19)\d{7,8}$/.test(phone)) {
-    return [false, '전화번호를 올바르게 입력해주세요'];
-  }
-  return [true, ''];
-};
-const validateAddress2 = address2 => {
-  if (address2 === '' || address2 === null) {
-    return [false, '상세주소를 입력해주세요'];
-  }
-  return [true, ''];
-};
-const validateForeignAddress = foreignAddress => {
-  if (foreignAddress === '' || foreignAddress === null) {
-    return [false, '주소를 입력해주세요'];
-  }
-  return [true, ''];
-};
 
 const countryOptions = [
   { value: '대한민국', label: '대한민국' },
@@ -134,21 +57,22 @@ export default function RegisterComponent() {
   const addressField2 = useFormField('');
   const foreignAddressField = useFormField('');
   const religionField = useFormField('없음');
-  const idValidation = useValidation(
+  const {
     validateId,
-    '영어나 영어 숫자 포함 4글자 이상',
-  );
-  const passwordValidation = useValidation(validatePassword, '4자리이상');
-  const nameValidation = useValidation(validateName, '이름을 입력해주세요');
-  const birthValidation = useValidation(
+    validatePassword,
+    validateName,
     validateBirth,
-    '생년월일을 입력해주세요',
-  );
-  const genderValidation = useValidation(validateGender, '성별을 선택해주세요');
-  const phoneValidation = useValidation(
+    validateGender,
     validatePhone,
-    '전화번호를 입력해주세요',
-  );
+    validateAddress2,
+    validateForeignAddress,
+  } = useValidate();
+  const idValidation = useValidation(validateId, '');
+  const passwordValidation = useValidation(validatePassword, '');
+  const nameValidation = useValidation(validateName, '');
+  const birthValidation = useValidation(validateBirth, '');
+  const genderValidation = useValidation(validateGender, '');
+  const phoneValidation = useValidation(validatePhone, '');
   const address2Validation = useValidation(validateAddress2, '');
   const foreignAddressValidation = useValidation(validateForeignAddress, '');
   //TODO api 주소 매칭 및 리다이랙트 주소 설정
@@ -228,37 +152,40 @@ export default function RegisterComponent() {
   };
 
   return (
-    <div className="flex justify-center items-start">
-      <form onSubmit={register} className="lg:w-1/2 min-w-[330px] p-4">
+    <div className="flex flex-col justify-center items-start">
+      <div className="mx-auto mb-4 text-xl font-bold">회원가입</div>
+      <form onSubmit={register} className="lg:w-1/2 min-w-[330px] py-4">
         <div>
           <TextField
             name="loginId"
-            label="아이디"
             field={idField}
             validation={idValidation}
-            placeholder="아이디"
+            placeholder="아이디(4~12자  영문+숫자)"
           />
           <TextField
             name="password"
-            label="비밀번호"
             field={passwordField}
             validation={passwordValidation}
-            placeholder="비밀번호"
+            placeholder="비밀번호(6~12자  영문+숫자)"
             type="password"
           />
           <TextField
             name="nusernameame"
-            label="이름"
             field={nameField}
             validation={nameValidation}
             placeholder="이름"
           />
           <TextField
             name="birth"
-            label="생년월일"
             field={birthField}
             validation={birthValidation}
             placeholder="생년월일(예시 19551014)"
+          />
+          <TextField
+            name="phone"
+            field={phoneField}
+            validation={phoneValidation}
+            placeholder="휴대폰번호(예시 01012345678)"
           />
           <Switch
             name="gender"
@@ -266,13 +193,6 @@ export default function RegisterComponent() {
             validation={genderValidation}
             options={['남', '여']}
             label="성별"
-          />
-          <TextField
-            name="phone"
-            label="휴대폰번호"
-            field={phoneField}
-            validation={phoneValidation}
-            placeholder="휴대폰번호(예시 01012345678)"
           />
           <Select
             name="country"
@@ -322,7 +242,7 @@ export default function RegisterComponent() {
         <p className="mb-8 text-gray-600 text-center">
           회원가입이 어려우신 경우
           <br />
-          <a href="tel:15447166">콜센터 ☎1522-8686로 문의해주세요.</a>
+          <a href="tel:1522686">콜센터 ☎1522-8686로 문의해주세요.</a>
         </p>
         <button
           type="submit"

@@ -6,7 +6,7 @@ export default function index() {
   const headerTitle = '회원가입';
   return (
     <div>
-      <PageComponent headerTitle={headerTitle}>
+      <PageComponent headerImage="/images/logo_k.png" headerTitle={headerTitle}>
         <RegisterComponent />
       </PageComponent>
     </div>

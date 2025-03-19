@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Checkbox from '../form/Checkbox';
 
 export default function TermsAgreement({ agreements, setAgreements }) {
   // const [agreements, setAgreements] = useState({
@@ -32,27 +33,31 @@ export default function TermsAgreement({ agreements, setAgreements }) {
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto">
+    <div className="py-6 ">
       <h1 className="text-2xl font-bold mb-4">약관 동의</h1>
 
       {/* 전체 동의 */}
       <div className="flex items-center mb-4">
-        <input
-          type="checkbox"
+        <Checkbox
           id="all"
           checked={agreements.all}
           onChange={handleAllChange}
-          className="w-5 h-5 text-red-500 border-gray-300 rounded focus:ring-red-500"
+          color="red-500"
+          label="약관 전체동의"
         />
-        <label htmlFor="all" className="ml-2 font-bold text-lg">
-          약관 전체동의
-        </label>
       </div>
 
       {/* 서비스 이용약관 */}
       <div className="border rounded-md p-4 mb-4">
         <div className="flex items-center mb-2">
-          <input
+          <Checkbox
+            id="termsOfUse"
+            checked={agreements.termsOfUse}
+            onChange={() => handleIndividualChange('termsOfUse')}
+            color="red-500"
+            label="서비스 이용약관 (필독)"
+          />
+          {/* <input
             type="checkbox"
             id="termsOfUse"
             checked={agreements.termsOfUse}
@@ -61,7 +66,7 @@ export default function TermsAgreement({ agreements, setAgreements }) {
           />
           <label htmlFor="termsOfUse" className="ml-2 font-bold">
             서비스 이용약관 (필독)
-          </label>
+          </label> */}
         </div>
         <div className="h-24 overflow-y-scroll border-t pt-2 text-sm text-gray-600">
           {/* <ul className="list-disc pl-6">
@@ -460,7 +465,14 @@ export default function TermsAgreement({ agreements, setAgreements }) {
       {/* 개인정보취급방침 */}
       <div className="border rounded-md p-4 mb-4">
         <div className="flex items-center mb-2">
-          <input
+          <Checkbox
+            id="personalInform"
+            checked={agreements.personalInform}
+            onChange={() => handleIndividualChange('personalInform')}
+            color="red-500"
+            label="개인정보취급방침 (필독)"
+          />
+          {/* <input
             type="checkbox"
             id="personalInform"
             checked={agreements.personalInform}
@@ -469,7 +481,7 @@ export default function TermsAgreement({ agreements, setAgreements }) {
           />
           <label htmlFor="personalInform" className="ml-2 font-bold">
             개인정보취급방침 (필독)
-          </label>
+          </label> */}
         </div>
         <div className="h-24 overflow-y-scroll border-t pt-2 text-sm text-gray-600">
           <p>
@@ -752,7 +764,14 @@ export default function TermsAgreement({ agreements, setAgreements }) {
       {/* 푸시 알림 서비스 수신 동의 */}
       <div className="border rounded-md p-4 mb-4">
         <div className="flex items-center">
-          <input
+          <Checkbox
+            id="pushInform"
+            checked={agreements.pushInform}
+            onChange={() => handleIndividualChange('pushInform')}
+            color="red-500"
+            label="푸시(알림서비스) 수신 동의"
+          />
+          {/* <input
             type="checkbox"
             id="pushInform"
             checked={agreements.pushInform}
@@ -761,7 +780,7 @@ export default function TermsAgreement({ agreements, setAgreements }) {
           />
           <label htmlFor="pushInform" className="ml-2">
             푸시(알림서비스) 수신 동의
-          </label>
+          </label> */}
         </div>
       </div>
 

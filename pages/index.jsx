@@ -6,7 +6,7 @@ export default function index() {
   const headerTitle = '광화문몰 로그인';
   return (
     <div>
-      <PageComponent headerTitle={headerTitle}>
+      <PageComponent headerImage="/images/logo_k.png" headerTitle={headerTitle}>
         <LoginComponent />
       </PageComponent>
     </div>

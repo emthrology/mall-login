@@ -6,6 +6,7 @@ const TextField = ({
   validation,
   placeholder,
   label,
+  background,
   type = 'text',
 }) => {
   return (
@@ -20,7 +21,7 @@ const TextField = ({
           {children}
         </div>
 
-        <div className="flex mb-2">
+        <div className="flex mb-2 h-14">
           <input
             type={type}
             placeholder={placeholder}
@@ -30,7 +31,7 @@ const TextField = ({
               validation.validate(e.target.value);
             }}
             onBlur={() => validation.validate(field.value)}
-            className={`w-full py-2 text-gray-700 bg-white border-b border-gray-300 focus:outline-none text-lg ${
+            className={`w-full p-2 text-gray-700 ${background ?? 'bg-white'} border border-zinc-200 focus:outline-none text-lg ${
               validation.isValid ? 'focus:border-b-blue-500' : 'border-red-500'
             }`}
           />
