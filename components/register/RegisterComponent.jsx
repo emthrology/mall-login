@@ -152,7 +152,7 @@ export default function RegisterComponent() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-start">
+    <div className="flex flex-col justify-center items-center">
       <div className="mx-auto mb-4 text-xl font-bold">회원가입</div>
       <form onSubmit={register} className="lg:w-1/2 min-w-[330px] py-4">
         <div>
